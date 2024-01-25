@@ -1,0 +1,37 @@
+version: "3.8"
+
+services:
+  node-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8400:8300"
+    depends_on:
+      - mysql
+    env_file:
+      - .env # Use the same .env file for both services
+    working_dir: /usr/src/app
+    volumes:
+      - /home/abeine/eoyprojects/nodejsapis/containerisedprojects/microservices_with_nodejs/orders_service:/usr/src/app
+    command: npm run dev
+
+  mysql:
+    image: mysql:latest
+    env_file:
+      - .env # Use the same .env file for both services
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --innodb_force_recovery=1
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_DEV_PASSWORD}
+    ports:
+      - "3306:3306"
+    networks:
+      - my-network
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+volumes:
+  mysql-data:
+
+networks:
+  my-network:
